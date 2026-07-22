@@ -304,6 +304,47 @@
     outline:none;
   }
   .form-field input:focus, .form-field textarea:focus{border-color:var(--gold);}
+  .brand-field-wrap{position:relative;}
+  .brand-suggestions{
+    display:none;
+    position:absolute;
+    top:100%;
+    left:0;
+    right:0;
+    margin-top:4px;
+    background:var(--bg-soft2);
+    border:1px solid rgba(243,232,216,0.15);
+    border-radius:8px;
+    max-height:170px;
+    overflow-y:auto;
+    z-index:10;
+  }
+  .brand-suggestions.open{display:block;}
+  .brand-suggestion-item{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:8px 12px;
+    font-size:13px;
+    color:var(--cream);
+    cursor:pointer;
+  }
+  .brand-suggestion-item:hover{background:rgba(201,162,75,0.14);}
+  .brand-suggestion-item .del-brand{
+    background:none;
+    border:none;
+    color:var(--cream-dim);
+    font-size:12px;
+    cursor:pointer;
+    padding:2px 4px;
+  }
+  .brand-suggestion-item .del-brand:hover{color:var(--danger);}
+  .brand-suggestions .no-match{
+    padding:8px 12px;
+    font-size:12px;
+    color:var(--cream-dim);
+    font-style:italic;
+  }
   .form-field textarea{resize:vertical;min-height:44px;}
   .season-checks{
     display:flex;
@@ -619,6 +660,34 @@
     cursor:pointer;
   }
   .logout-btn:hover{color:var(--cream);border-color:var(--gold);}
+  .change-pw-btn{
+    position:fixed;
+    top:68px;
+    right:22px;
+    z-index:60;
+    background:var(--bg-soft);
+    border:1px solid rgba(243,232,216,0.15);
+    border-radius:20px;
+    padding:8px 16px;
+    color:var(--cream-dim);
+    font-size:12px;
+    cursor:pointer;
+  }
+  .change-pw-btn:hover{color:var(--cream);border-color:var(--gold);}
+  .forgot-link{
+    display:block;
+    background:none;
+    border:none;
+    color:var(--cream-dim);
+    font-size:12px;
+    text-align:center;
+    width:100%;
+    margin-top:14px;
+    cursor:pointer;
+    text-decoration:underline;
+    text-decoration-color:rgba(243,232,216,0.3);
+  }
+  .forgot-link:hover{color:var(--gold);}
   .hidden{display:none !important;}
 </style>
 </head>
@@ -628,25 +697,60 @@
   <div class="auth-card">
     <div class="auth-title">A Scented Diary</div>
     <div class="auth-sub" id="authSubtitle">Sign in to sync your collection</div>
-    <div class="auth-field">
-      <label>Email</label>
-      <input type="email" id="authEmail" autocomplete="email">
-    </div>
-    <div class="auth-field">
-      <label>Password</label>
-      <input type="password" id="authPassword" autocomplete="current-password">
-    </div>
-    <button class="auth-btn" id="authSubmitBtn">Sign in</button>
+    <form id="authForm">
+      <div class="auth-field">
+        <label>Email</label>
+        <input type="email" id="authEmail" autocomplete="username">
+      </div>
+      <div class="auth-field">
+        <label>Password</label>
+        <input type="password" id="authPassword" autocomplete="current-password">
+      </div>
+      <button type="submit" class="auth-btn" id="authSubmitBtn">Sign in</button>
+    </form>
     <div class="auth-error" id="authError"></div>
     <div class="auth-switch">
       <span id="authSwitchText">Don't have an account?</span>
       <button id="authSwitchBtn">Sign up</button>
     </div>
+    <button class="forgot-link" id="forgotBtn">Forgot password?</button>
     <div class="auth-hint">Your perfumes are private to your account and sync across any device you log into.</div>
   </div>
 </div>
  
+<div class="auth-screen hidden" id="forgotScreen">
+  <div class="auth-card">
+    <div class="auth-title">Reset password</div>
+    <div class="auth-sub">Enter your email and we'll send a reset link</div>
+    <form id="forgotForm">
+      <div class="auth-field">
+        <label>Email</label>
+        <input type="email" id="forgotEmail" autocomplete="username">
+      </div>
+      <button type="submit" class="auth-btn" id="forgotSubmitBtn">Send reset link</button>
+    </form>
+    <div class="auth-error" id="forgotError"></div>
+    <button class="forgot-link" id="backToSignInBtn">Back to sign in</button>
+  </div>
+</div>
+ 
+<div class="auth-screen hidden" id="newPasswordScreen">
+  <div class="auth-card">
+    <div class="auth-title">Choose a new password</div>
+    <div class="auth-sub">This link is one-time use</div>
+    <form id="newPasswordForm">
+      <div class="auth-field">
+        <label>New password</label>
+        <input type="password" id="newPasswordInput" autocomplete="new-password">
+      </div>
+      <button type="submit" class="auth-btn" id="newPasswordSubmitBtn">Update password</button>
+    </form>
+    <div class="auth-error" id="newPasswordError"></div>
+  </div>
+</div>
+ 
 <button class="logout-btn hidden" id="logoutBtn">Log out</button>
+<button class="change-pw-btn hidden" id="changePwBtn">Change password</button>
  
 <div class="hidden" id="appRoot">
 <button class="menu-btn" id="menuBtn" aria-label="Menu">
@@ -683,9 +787,10 @@
   <div class="form-panel" id="formPanel">
     <div class="form-title" id="formTitle">Add a perfume</div>
     <div class="form-row">
-      <div class="form-field">
+      <div class="form-field brand-field-wrap">
         <label>Brand</label>
-        <input type="text" id="fBrand">
+        <input type="text" id="fBrand" autocomplete="off">
+        <div class="brand-suggestions" id="brandSuggestions"></div>
       </div>
       <div class="form-field">
         <label>Perfume name</label>
@@ -797,18 +902,81 @@ async function apiRefresh(refresh_token){
   return res.json();
 }
  
+async function apiRecover(email){
+  const redirectTo = window.location.origin + window.location.pathname;
+  const res = await fetch(SUPABASE_URL + '/auth/v1/recover', {
+    method:'POST',
+    headers:{'Content-Type':'application/json','apikey':SUPABASE_ANON_KEY},
+    body: JSON.stringify({email, options:{redirect_to: redirectTo}})
+  });
+  if(!res.ok){
+    const data = await res.json().catch(()=>({}));
+    throw new Error(data.error_description || data.msg || 'Could not send reset email');
+  }
+}
+ 
+async function apiUpdatePassword(accessToken, newPassword){
+  const res = await fetch(SUPABASE_URL + '/auth/v1/user', {
+    method:'PUT',
+    headers:{'Content-Type':'application/json','apikey':SUPABASE_ANON_KEY,'Authorization':'Bearer '+accessToken},
+    body: JSON.stringify({password:newPassword})
+  });
+  const data = await res.json();
+  if(!res.ok) throw new Error(data.error_description || data.msg || 'Could not update password');
+  return data;
+}
+ 
 function showAuthScreen(){
   document.getElementById('authScreen').classList.remove('hidden');
+  document.getElementById('forgotScreen').classList.add('hidden');
+  document.getElementById('newPasswordScreen').classList.add('hidden');
   document.getElementById('appRoot').classList.add('hidden');
   document.getElementById('logoutBtn').classList.add('hidden');
+  document.getElementById('changePwBtn').classList.add('hidden');
 }
 function showApp(){
   document.getElementById('authScreen').classList.add('hidden');
+  document.getElementById('forgotScreen').classList.add('hidden');
+  document.getElementById('newPasswordScreen').classList.add('hidden');
   document.getElementById('appRoot').classList.remove('hidden');
   document.getElementById('logoutBtn').classList.remove('hidden');
+  document.getElementById('changePwBtn').classList.remove('hidden');
+}
+function showForgotScreen(){
+  document.getElementById('authScreen').classList.add('hidden');
+  document.getElementById('forgotScreen').classList.remove('hidden');
+  document.getElementById('newPasswordScreen').classList.add('hidden');
+}
+function showNewPasswordScreen(){
+  document.getElementById('authScreen').classList.add('hidden');
+  document.getElementById('forgotScreen').classList.add('hidden');
+  document.getElementById('newPasswordScreen').classList.remove('hidden');
+  document.getElementById('appRoot').classList.add('hidden');
+  document.getElementById('logoutBtn').classList.add('hidden');
+  document.getElementById('changePwBtn').classList.add('hidden');
+}
+ 
+// Detects the #access_token=...&type=recovery fragment Supabase appends
+// to the reset-password email link, so we can show the new-password screen.
+let recoveryAccessToken = null;
+function checkForRecoveryLink(){
+  const hash = window.location.hash;
+  if(hash && hash.includes('type=recovery')){
+    const params = new URLSearchParams(hash.replace('#','?'));
+    const token = params.get('access_token');
+    if(token){
+      recoveryAccessToken = token;
+      showNewPasswordScreen();
+      history.replaceState(null, '', window.location.pathname);
+      return true;
+    }
+  }
+  return false;
 }
  
 async function initAuth(){
+  if(checkForRecoveryLink()) return;
+ 
   const stored = readStoredSession();
   if(stored){
     const refreshed = await apiRefresh(stored.refresh_token);
@@ -832,7 +1000,8 @@ document.getElementById('authSwitchBtn').addEventListener('click', ()=>{
   document.getElementById('authError').style.display = 'none';
 });
  
-document.getElementById('authSubmitBtn').addEventListener('click', async ()=>{
+document.getElementById('authForm').addEventListener('submit', async (e)=>{
+  e.preventDefault();
   const email = document.getElementById('authEmail').value.trim();
   const password = document.getElementById('authPassword').value;
   const errEl = document.getElementById('authError');
@@ -871,6 +1040,74 @@ document.getElementById('authSubmitBtn').addEventListener('click', async ()=>{
 document.getElementById('logoutBtn').addEventListener('click', ()=>{
   clearSession();
   showAuthScreen();
+});
+ 
+// ---------- Forgot password ----------
+document.getElementById('forgotBtn').addEventListener('click', showForgotScreen);
+document.getElementById('backToSignInBtn').addEventListener('click', showAuthScreen);
+ 
+document.getElementById('forgotForm').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const email = document.getElementById('forgotEmail').value.trim();
+  const errEl = document.getElementById('forgotError');
+  errEl.style.display = 'none';
+  if(!email){
+    errEl.style.color = 'var(--danger)';
+    errEl.textContent = 'Please enter your email.';
+    errEl.style.display = 'block';
+    return;
+  }
+  try{
+    await apiRecover(email);
+    errEl.style.color = 'var(--gold)';
+    errEl.textContent = 'Check your email for a reset link.';
+    errEl.style.display = 'block';
+  }catch(e){
+    errEl.style.color = 'var(--danger)';
+    errEl.textContent = e.message;
+    errEl.style.display = 'block';
+  }
+});
+ 
+// ---------- Reset password (from email link) ----------
+document.getElementById('newPasswordForm').addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  const newPassword = document.getElementById('newPasswordInput').value;
+  const errEl = document.getElementById('newPasswordError');
+  errEl.style.display = 'none';
+  if(!newPassword || newPassword.length < 6){
+    errEl.style.color = 'var(--danger)';
+    errEl.textContent = 'Password must be at least 6 characters.';
+    errEl.style.display = 'block';
+    return;
+  }
+  try{
+    await apiUpdatePassword(recoveryAccessToken, newPassword);
+    errEl.style.color = 'var(--gold)';
+    errEl.textContent = 'Password updated! You can sign in now.';
+    errEl.style.display = 'block';
+    setTimeout(showAuthScreen, 1500);
+  }catch(e){
+    errEl.style.color = 'var(--danger)';
+    errEl.textContent = e.message;
+    errEl.style.display = 'block';
+  }
+});
+ 
+// ---------- Change password (while logged in) ----------
+document.getElementById('changePwBtn').addEventListener('click', async ()=>{
+  const newPassword = prompt('Enter your new password (at least 6 characters):');
+  if(!newPassword) return;
+  if(newPassword.length < 6){
+    alert('Password must be at least 6 characters.');
+    return;
+  }
+  try{
+    await apiUpdatePassword(session.access_token, newPassword);
+    alert('Password updated successfully.');
+  }catch(e){
+    alert('Could not update password: ' + e.message);
+  }
 });
  
 // ---------- Data (Supabase REST) ----------
@@ -1026,6 +1263,71 @@ function renderBrandFilter(){
   select.value = brands.includes(current) ? current : '';
   activeBrand = select.value;
 }
+ 
+// ---------- Brand autocomplete ----------
+function getHiddenBrands(){
+  try{ return new Set(JSON.parse(localStorage.getItem('hidden-brands') || '[]')); }
+  catch(e){ return new Set(); }
+}
+function saveHiddenBrands(set){
+  try{ localStorage.setItem('hidden-brands', JSON.stringify([...set])); }catch(e){}
+}
+function getKnownBrands(){
+  const hidden = getHiddenBrands();
+  const seen = new Map();
+  perfumes.forEach(p=>{
+    if(p.brand && !hidden.has(p.brand.toLowerCase())){
+      seen.set(p.brand.toLowerCase(), p.brand);
+    }
+  });
+  return [...seen.values()].sort((a,b)=>a.localeCompare(b));
+}
+ 
+function renderBrandSuggestions(){
+  const input = document.getElementById('fBrand');
+  const box = document.getElementById('brandSuggestions');
+  const query = input.value.trim().toLowerCase();
+  const all = getKnownBrands();
+  const matches = query ? all.filter(b=>b.toLowerCase().includes(query)) : all;
+ 
+  if(matches.length === 0){
+    box.innerHTML = query
+      ? `<div class="no-match">No match — this will be added as a new brand.</div>`
+      : `<div class="no-match">No brands yet — type to add one.</div>`;
+  }else{
+    box.innerHTML = matches.map(b=>`
+      <div class="brand-suggestion-item" data-brand="${b}">
+        <span>${b}</span>
+        <button class="del-brand" data-del-brand="${b}" title="Remove from suggestions">✕</button>
+      </div>
+    `).join('');
+  }
+  box.classList.add('open');
+ 
+  box.querySelectorAll('[data-brand]').forEach(item=>{
+    item.addEventListener('mousedown', (e)=>{
+      if(e.target.closest('[data-del-brand]')) return;
+      input.value = item.dataset.brand;
+      box.classList.remove('open');
+    });
+  });
+  box.querySelectorAll('[data-del-brand]').forEach(btn=>{
+    btn.addEventListener('mousedown', (e)=>{
+      e.preventDefault();
+      e.stopPropagation();
+      const hidden = getHiddenBrands();
+      hidden.add(btn.dataset.delBrand.toLowerCase());
+      saveHiddenBrands(hidden);
+      renderBrandSuggestions();
+    });
+  });
+}
+ 
+document.getElementById('fBrand').addEventListener('focus', renderBrandSuggestions);
+document.getElementById('fBrand').addEventListener('input', renderBrandSuggestions);
+document.getElementById('fBrand').addEventListener('blur', ()=>{
+  setTimeout(()=>{ document.getElementById('brandSuggestions').classList.remove('open'); }, 150);
+});
  
 // ---------- Form ----------
 function renderSeasonChecks(selected){
@@ -1229,4 +1531,3 @@ initAuth();
 </script>
 </body>
 </html>
- 
