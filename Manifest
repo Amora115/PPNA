@@ -1,0 +1,19 @@
+{
+  "name": "A Scented Diary",
+  "short_name": "Scented Diary",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#241522",
+  "theme_color": "#241522",
+  "description": "A personal perfume collection tracker",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23241522'/%3E%3Ccircle cx='50' cy='55' r='28' fill='none' stroke='%23c9a24b' stroke-width='3'/%3E%3Crect x='42' y='18' width='16' height='14' rx='3' fill='%23c9a24b'/%3E%3Ctext x='50' y='63' font-family='Georgia,serif' font-size='26' fill='%23f3e8d8' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
