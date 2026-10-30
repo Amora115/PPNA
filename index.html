@@ -11,6 +11,7 @@
 <meta name="apple-mobile-web-app-title" content="Scented Diary">
 <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23241522'/%3E%3Ccircle cx='50' cy='55' r='28' fill='none' stroke='%23c9a24b' stroke-width='3'/%3E%3Crect x='42' y='18' width='16' height='14' rx='3' fill='%23c9a24b'/%3E%3Ctext x='50' y='63' font-family='Georgia,serif' font-size='26' fill='%23f3e8d8' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%23241522'/%3E%3Ccircle cx='50' cy='55' r='28' fill='none' stroke='%23c9a24b' stroke-width='3'/%3E%3Crect x='42' y='18' width='16' height='14' rx='3' fill='%23c9a24b'/%3E%3Ctext x='50' y='63' font-family='Georgia,serif' font-size='26' fill='%23f3e8d8' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
+<link rel="manifest" href="manifest.json">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -58,7 +59,7 @@
   }
   h1 em{font-style:italic;color:var(--gold);font-weight:500;}
   .sub{color:var(--cream-dim);margin-top:14px;font-size:15px;}
- 
+
   /* Hamburger menu */
   .menu-btn{
     position:fixed;
@@ -89,7 +90,7 @@
   .menu-btn.open .bar:nth-child(1){top:19px; transform:rotate(45deg);}
   .menu-btn.open .bar:nth-child(2){opacity:0;}
   .menu-btn.open .bar:nth-child(3){top:19px; transform:rotate(-45deg);}
- 
+
   .sidebar-backdrop{
     position:fixed;inset:0;
     background:rgba(0,0,0,0.45);
@@ -99,7 +100,7 @@
     z-index:40;
   }
   .sidebar-backdrop.open{opacity:1;pointer-events:auto;}
- 
+
   .sidebar{
     position:fixed;
     top:0;left:0;
@@ -111,7 +112,9 @@
     transition:transform 0.25s ease;
     z-index:50;
     padding:80px 22px 22px;
-    overflow-y:auto;
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
   }
   .sidebar.open{transform:translateX(0);}
   .sidebar h3{
@@ -147,7 +150,14 @@
     font-size:13px;
     cursor:pointer;
   }
-  .tab-list{display:flex;flex-direction:column;gap:6px;}
+  .tab-list{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    flex:1;
+    overflow-y:auto;
+    min-height:0;
+  }
   .tab-pill{
     display:flex;
     align-items:center;
@@ -175,7 +185,7 @@
   }
   .tab-pill .remove-tag:hover{color:var(--danger);}
   .no-tabs{font-size:12px;color:var(--cream-dim);font-style:italic;opacity:0.7;}
- 
+
   .legend{
     display:flex;
     justify-content:center;
@@ -204,7 +214,7 @@
     border-color:var(--gold);
     background:rgba(201,162,75,0.12);
   }
- 
+
   .toolbar{
     display:flex;
     justify-content:center;
@@ -227,7 +237,7 @@
   }
   .search-input::placeholder{color:var(--cream-dim);}
   .search-input:focus{border-color:var(--gold);}
- 
+
   .brand-select{
     max-width:160px;
     background:var(--bg-soft);
@@ -249,7 +259,7 @@
   }
   .brand-select:focus{border-color:var(--gold);}
   .brand-select option{background:var(--bg-soft);color:var(--cream);}
- 
+
   .add-btn{
     background:var(--gold);
     border:none;
@@ -263,7 +273,7 @@
     transition:filter 0.2s ease;
   }
   .add-btn:hover{filter:brightness(1.08);}
- 
+
   .form-panel{
     background:var(--bg-soft);
     border:1px solid rgba(201,162,75,0.3);
@@ -397,7 +407,7 @@
     cursor:pointer;
   }
   .btn-danger:hover{background:rgba(201,97,90,0.12);}
- 
+
   .list{
     display:grid;
     grid-template-columns:repeat(2, 1fr);
@@ -416,7 +426,7 @@
     position:relative;
   }
   .row:hover{border-color:rgba(201,162,75,0.4);}
- 
+
   .corner-badges{
     display:flex;
     gap:4px;
@@ -437,7 +447,7 @@
     border:1px solid rgba(243,232,216,0.15);
     text-transform:uppercase;
   }
- 
+
   .brand-row{
     display:flex;
     align-items:center;
@@ -459,7 +469,7 @@
   .dot.fall{background:var(--fall);}
   .dot.day{background:var(--day);}
   .dot.night{background:var(--night); border-color:rgba(143,184,222,0.5);}
- 
+
   .name{
     font-family:'Playfair Display', serif;
     font-weight:600;
@@ -469,7 +479,7 @@
     margin-bottom:8px;
   }
   .name:hover{color:var(--gold);text-decoration:underline;text-decoration-color:rgba(201,162,75,0.5);}
- 
+
   .row-bottom{display:flex;align-items:center;justify-content:space-between;gap:10px;}
   .notes-toggle{
     background:none;
@@ -511,7 +521,7 @@
     border-radius:12px;
     padding:3px 9px;
   }
- 
+
   .row-actions{
     display:flex;
     flex-direction:column;
@@ -539,7 +549,7 @@
     font-size:15px;
   }
   .icon-btn:hover{color:var(--cream);border-color:var(--gold);}
- 
+
   .empty-msg{
     text-align:center;
     color:var(--cream-dim);
@@ -549,7 +559,7 @@
     grid-column:1/-1;
     padding:30px 0;
   }
- 
+
   footer{
     text-align:center;
     margin-top:44px;
@@ -557,7 +567,7 @@
     color:var(--cream-dim);
     letter-spacing:0.05em;
   }
- 
+
   .auth-screen{
     min-height:80vh;
     display:flex;
@@ -647,12 +657,13 @@
     line-height:1.5;
   }
   .sidebar-account{
-    margin-top:24px;
+    margin-top:12px;
     padding-top:16px;
     border-top:1px solid rgba(243,232,216,0.1);
     display:flex;
     flex-direction:column;
     gap:8px;
+    flex-shrink:0;
   }
   .sidebar-account-btn{
     width:100%;
@@ -687,7 +698,7 @@
 </style>
 </head>
 <body>
- 
+
 <div class="auth-screen" id="authScreen">
   <div class="auth-card">
     <div class="auth-title">A Scented Diary</div>
@@ -712,7 +723,7 @@
     <div class="auth-hint">Your perfumes are private to your account and sync across any device you log into.</div>
   </div>
 </div>
- 
+
 <div class="auth-screen hidden" id="forgotScreen">
   <div class="auth-card">
     <div class="auth-title">Reset password</div>
@@ -728,7 +739,7 @@
     <button class="forgot-link" id="backToSignInBtn">Back to sign in</button>
   </div>
 </div>
- 
+
 <div class="auth-screen hidden" id="newPasswordScreen">
   <div class="auth-card">
     <div class="auth-title">Choose a new password</div>
@@ -743,7 +754,7 @@
     <div class="auth-error" id="newPasswordError"></div>
   </div>
 </div>
- 
+
 <div class="hidden" id="appRoot">
 <button class="menu-btn" id="menuBtn" aria-label="Menu">
   <span class="bar"></span><span class="bar"></span><span class="bar"></span>
@@ -762,16 +773,16 @@
     <button class="sidebar-account-btn hidden" id="logoutBtn">Log out</button>
   </div>
 </div>
- 
+
 <div class="wrap">
   <header>
     <div class="eyebrow">A Scented Diary</div>
     <h1>My Perfume <em>Collection</em></h1>
     <div class="sub">Authored by Amora</div>
   </header>
- 
+
   <div class="legend" id="legend"></div>
- 
+
   <div class="toolbar">
     <input type="text" class="search-input" id="perfumeSearch" placeholder="Search a perfume or note…">
     <select class="brand-select" id="brandFilter">
@@ -779,7 +790,7 @@
     </select>
     <button class="add-btn" id="addBtn">+ Add perfume</button>
   </div>
- 
+
   <div class="form-panel" id="formPanel">
     <div class="form-title" id="formTitle">Add a perfume</div>
     <div class="form-row">
@@ -812,16 +823,16 @@
       <button class="btn-primary" id="saveBtn">Save perfume</button>
     </div>
   </div>
- 
+
   <div class="list" id="list"></div>
- 
+
 </div>
 </div>
- 
+
 <script>
 const SUPABASE_URL = 'https://nbdvulnocyitfnzgntcw.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5iZHZ1bG5vY3lpdGZuemdudGN3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ2MjM3NDcsImV4cCI6MjEwMDE5OTc0N30.0wKGaRx4_qz2ZCG_6Jl15vfPQAW1k-r-pscGUoy6g5g';
- 
+
 const SEASONS = [
   {id:'spring', label:'Spring'},
   {id:'summer', label:'Summer'},
@@ -830,7 +841,7 @@ const SEASONS = [
   {id:'day', label:'Day'},
   {id:'night', label:'Night'}
 ];
- 
+
 let perfumes = [];
 let customTabs = [];
 let activeSeason = null;
@@ -840,7 +851,7 @@ let searchText = '';
 let editingId = null;
 let session = null;
 let authMode = 'signin';
- 
+
 // ---------- Auth ----------
 function persistSession(s){
   session = s;
@@ -856,7 +867,7 @@ function clearSession(){
   session = null;
   try{ localStorage.removeItem('scented-diary-session'); }catch(e){}
 }
- 
+
 function authHeaders(){
   return {
     'apikey': SUPABASE_ANON_KEY,
@@ -865,9 +876,10 @@ function authHeaders(){
     'Prefer': 'return=representation'
   };
 }
- 
+
 async function apiSignUp(email, password){
-  const res = await fetch(SUPABASE_URL + '/auth/v1/signup', {
+  const redirectTo = window.location.origin + window.location.pathname.replace(/index\.html$/, '');
+  const res = await fetch(SUPABASE_URL + '/auth/v1/signup?redirect_to=' + encodeURIComponent(redirectTo), {
     method:'POST',
     headers:{'Content-Type':'application/json','apikey':SUPABASE_ANON_KEY},
     body: JSON.stringify({email, password})
@@ -876,7 +888,7 @@ async function apiSignUp(email, password){
   if(!res.ok) throw new Error(data.error_description || data.msg || 'Sign up failed');
   return data;
 }
- 
+
 async function apiSignIn(email, password){
   const res = await fetch(SUPABASE_URL + '/auth/v1/token?grant_type=password', {
     method:'POST',
@@ -887,7 +899,7 @@ async function apiSignIn(email, password){
   if(!res.ok) throw new Error(data.error_description || data.msg || 'Sign in failed');
   return data;
 }
- 
+
 async function apiRefresh(refresh_token){
   const res = await fetch(SUPABASE_URL + '/auth/v1/token?grant_type=refresh_token', {
     method:'POST',
@@ -897,20 +909,20 @@ async function apiRefresh(refresh_token){
   if(!res.ok) return null;
   return res.json();
 }
- 
+
 async function apiRecover(email){
-  const redirectTo = 'https://amora115.github.io/PPNA/';
-  const res = await fetch(SUPABASE_URL + '/auth/v1/recover', {
+  const redirectTo = window.location.origin + window.location.pathname.replace(/index\.html$/, '');
+  const res = await fetch(SUPABASE_URL + '/auth/v1/recover?redirect_to=' + encodeURIComponent(redirectTo), {
     method:'POST',
     headers:{'Content-Type':'application/json','apikey':SUPABASE_ANON_KEY},
-    body: JSON.stringify({email, options:{redirect_to: redirectTo}})
+    body: JSON.stringify({email})
   });
   if(!res.ok){
     const data = await res.json().catch(()=>({}));
     throw new Error(data.error_description || data.msg || 'Could not send reset email');
   }
 }
- 
+
 async function apiUpdatePassword(accessToken, newPassword){
   const res = await fetch(SUPABASE_URL + '/auth/v1/user', {
     method:'PUT',
@@ -921,7 +933,7 @@ async function apiUpdatePassword(accessToken, newPassword){
   if(!res.ok) throw new Error(data.error_description || data.msg || 'Could not update password');
   return data;
 }
- 
+
 function showAuthScreen(){
   document.getElementById('authScreen').classList.remove('hidden');
   document.getElementById('forgotScreen').classList.add('hidden');
@@ -951,12 +963,25 @@ function showNewPasswordScreen(){
   document.getElementById('logoutBtn').classList.add('hidden');
   document.getElementById('changePwBtn').classList.add('hidden');
 }
- 
+
 // Detects the #access_token=...&type=recovery fragment Supabase appends
 // to the reset-password email link, so we can show the new-password screen.
 let recoveryAccessToken = null;
 function checkForRecoveryLink(){
   const hash = window.location.hash;
+  if(hash && hash.includes('error_code=')){
+    const params = new URLSearchParams(hash.replace('#','?'));
+    const code = params.get('error_code');
+    history.replaceState(null, '', window.location.pathname);
+    showForgotScreen();
+    const errEl = document.getElementById('forgotError');
+    errEl.style.color = 'var(--danger)';
+    errEl.textContent = code === 'otp_expired'
+      ? 'This reset link has expired or was already used. Request a new one below.'
+      : 'This link is not valid. Request a new one below.';
+    errEl.style.display = 'block';
+    return true;
+  }
   if(hash && hash.includes('type=recovery')){
     const params = new URLSearchParams(hash.replace('#','?'));
     const token = params.get('access_token');
@@ -969,10 +994,10 @@ function checkForRecoveryLink(){
   }
   return false;
 }
- 
+
 async function initAuth(){
   if(checkForRecoveryLink()) return;
- 
+
   const stored = readStoredSession();
   if(stored){
     const refreshed = await apiRefresh(stored.refresh_token);
@@ -986,7 +1011,7 @@ async function initAuth(){
   clearSession();
   showAuthScreen();
 }
- 
+
 document.getElementById('authSwitchBtn').addEventListener('click', ()=>{
   authMode = authMode === 'signin' ? 'signup' : 'signin';
   document.getElementById('authSubmitBtn').textContent = authMode === 'signin' ? 'Sign in' : 'Create account';
@@ -995,7 +1020,7 @@ document.getElementById('authSwitchBtn').addEventListener('click', ()=>{
   document.getElementById('authSwitchBtn').textContent = authMode === 'signin' ? 'Sign up' : 'Sign in';
   document.getElementById('authError').style.display = 'none';
 });
- 
+
 document.getElementById('authForm').addEventListener('submit', async (e)=>{
   e.preventDefault();
   const email = document.getElementById('authEmail').value.trim();
@@ -1032,16 +1057,16 @@ document.getElementById('authForm').addEventListener('submit', async (e)=>{
     errEl.style.display = 'block';
   }
 });
- 
+
 document.getElementById('logoutBtn').addEventListener('click', ()=>{
   clearSession();
   showAuthScreen();
 });
- 
+
 // ---------- Forgot password ----------
 document.getElementById('forgotBtn').addEventListener('click', showForgotScreen);
 document.getElementById('backToSignInBtn').addEventListener('click', showAuthScreen);
- 
+
 document.getElementById('forgotForm').addEventListener('submit', async (e)=>{
   e.preventDefault();
   const email = document.getElementById('forgotEmail').value.trim();
@@ -1064,7 +1089,7 @@ document.getElementById('forgotForm').addEventListener('submit', async (e)=>{
     errEl.style.display = 'block';
   }
 });
- 
+
 // ---------- Reset password (from email link) ----------
 document.getElementById('newPasswordForm').addEventListener('submit', async (e)=>{
   e.preventDefault();
@@ -1089,7 +1114,7 @@ document.getElementById('newPasswordForm').addEventListener('submit', async (e)=
     errEl.style.display = 'block';
   }
 });
- 
+
 // ---------- Change password (while logged in) ----------
 document.getElementById('changePwBtn').addEventListener('click', async ()=>{
   const newPassword = prompt('Enter your new password (at least 6 characters):');
@@ -1105,16 +1130,16 @@ document.getElementById('changePwBtn').addEventListener('click', async ()=>{
     alert('Could not update password: ' + e.message);
   }
 });
- 
+
 // ---------- Data (Supabase REST) ----------
 async function loadData(){
   const pRes = await fetch(SUPABASE_URL + '/rest/v1/perfumes?select=*&order=created_at.asc', { headers: authHeaders() });
   let pData = pRes.ok ? await pRes.json() : [];
   perfumes = pData.map(p=>({...p, seasons: p.seasons||[], tags: p.tags||[]}));
- 
+
   const tRes = await fetch(SUPABASE_URL + '/rest/v1/custom_tags?select=*&order=created_at.asc', { headers: authHeaders() });
   let tData = tRes.ok ? await tRes.json() : [];
- 
+
   if(tData.length === 0){
     await fetch(SUPABASE_URL + '/rest/v1/custom_tags', {
       method:'POST',
@@ -1125,10 +1150,10 @@ async function loadData(){
     tData = retry.ok ? await retry.json() : [];
   }
   customTabs = tData;
- 
+
   render();
 }
- 
+
 async function insertPerfume(p){
   const res = await fetch(SUPABASE_URL + '/rest/v1/perfumes', {
     method:'POST',
@@ -1138,7 +1163,7 @@ async function insertPerfume(p){
   const data = await res.json();
   return data[0];
 }
- 
+
 async function updatePerfumeApi(id, p){
   await fetch(SUPABASE_URL + '/rest/v1/perfumes?id=eq.' + id, {
     method:'PATCH',
@@ -1146,14 +1171,14 @@ async function updatePerfumeApi(id, p){
     body: JSON.stringify(p)
   });
 }
- 
+
 async function deletePerfumeApi(id){
   await fetch(SUPABASE_URL + '/rest/v1/perfumes?id=eq.' + id, {
     method:'DELETE',
     headers: authHeaders()
   });
 }
- 
+
 async function insertTag(t){
   await fetch(SUPABASE_URL + '/rest/v1/custom_tags', {
     method:'POST',
@@ -1161,19 +1186,19 @@ async function insertTag(t){
     body: JSON.stringify({...t, user_id: session.user.id})
   });
 }
- 
+
 async function deleteTagApi(id){
   await fetch(SUPABASE_URL + '/rest/v1/custom_tags?id=eq.' + id, {
     method:'DELETE',
     headers: authHeaders()
   });
 }
- 
+
 // ---------- Sidebar ----------
 const menuBtn = document.getElementById('menuBtn');
 const sidebar = document.getElementById('sidebar');
 const backdrop = document.getElementById('sidebarBackdrop');
- 
+
 function toggleSidebar(){
   const isOpen = sidebar.classList.toggle('open');
   backdrop.classList.toggle('open', isOpen);
@@ -1181,7 +1206,7 @@ function toggleSidebar(){
 }
 menuBtn.addEventListener('click', toggleSidebar);
 backdrop.addEventListener('click', toggleSidebar);
- 
+
 function renderTabList(){
   const tabList = document.getElementById('tabList');
   if(customTabs.length === 0){
@@ -1196,7 +1221,7 @@ function renderTabList(){
       ${t.builtin ? '' : `<button class="remove-tag" data-remove="${t.id}" title="Delete tag">✕</button>`}
     </div>
   `).join('');
- 
+
   tabList.querySelectorAll('[data-tag]').forEach(el=>{
     el.addEventListener('click', ()=>{
       const id = el.dataset.tag;
@@ -1219,7 +1244,7 @@ function renderTabList(){
     });
   });
 }
- 
+
 document.getElementById('newTabBtn').addEventListener('click', async ()=>{
   const input = document.getElementById('newTabInput');
   const name = input.value.trim();
@@ -1234,7 +1259,7 @@ document.getElementById('newTabBtn').addEventListener('click', async ()=>{
 document.getElementById('newTabInput').addEventListener('keydown', (e)=>{
   if(e.key === 'Enter') document.getElementById('newTabBtn').click();
 });
- 
+
 // ---------- Legend / filters ----------
 function renderLegend(){
   const legend = document.getElementById('legend');
@@ -1249,7 +1274,7 @@ function renderLegend(){
     });
   });
 }
- 
+
 function renderBrandFilter(){
   const select = document.getElementById('brandFilter');
   const brands = [...new Set(perfumes.map(p=>p.brand).filter(Boolean))].sort();
@@ -1259,7 +1284,7 @@ function renderBrandFilter(){
   select.value = brands.includes(current) ? current : '';
   activeBrand = select.value;
 }
- 
+
 // ---------- Brand autocomplete ----------
 function getHiddenBrands(){
   try{ return new Set(JSON.parse(localStorage.getItem('hidden-brands') || '[]')); }
@@ -1278,14 +1303,14 @@ function getKnownBrands(){
   });
   return [...seen.values()].sort((a,b)=>a.localeCompare(b));
 }
- 
+
 function renderBrandSuggestions(){
   const input = document.getElementById('fBrand');
   const box = document.getElementById('brandSuggestions');
   const query = input.value.trim().toLowerCase();
   const all = getKnownBrands();
   const matches = query ? all.filter(b=>b.toLowerCase().includes(query)) : all;
- 
+
   if(matches.length === 0){
     box.innerHTML = query
       ? `<div class="no-match">No match — this will be added as a new brand.</div>`
@@ -1299,7 +1324,7 @@ function renderBrandSuggestions(){
     `).join('');
   }
   box.classList.add('open');
- 
+
   box.querySelectorAll('[data-brand]').forEach(item=>{
     item.addEventListener('mousedown', (e)=>{
       if(e.target.closest('[data-del-brand]')) return;
@@ -1318,13 +1343,13 @@ function renderBrandSuggestions(){
     });
   });
 }
- 
+
 document.getElementById('fBrand').addEventListener('focus', renderBrandSuggestions);
 document.getElementById('fBrand').addEventListener('input', renderBrandSuggestions);
 document.getElementById('fBrand').addEventListener('blur', ()=>{
   setTimeout(()=>{ document.getElementById('brandSuggestions').classList.remove('open'); }, 150);
 });
- 
+
 // ---------- Form ----------
 function renderSeasonChecks(selected){
   const wrap = document.getElementById('seasonChecks');
@@ -1343,7 +1368,7 @@ function renderSeasonChecks(selected){
     });
   });
 }
- 
+
 function renderTagChecks(selected){
   const wrap = document.getElementById('tagChecks');
   const labelBlock = document.getElementById('tagFieldLabel');
@@ -1368,11 +1393,11 @@ function renderTagChecks(selected){
     });
   });
 }
- 
+
 function getCheckedValues(containerId){
   return [...document.querySelectorAll('#'+containerId+' input:checked')].map(i=>i.value);
 }
- 
+
 function openForm(perfume){
   editingId = perfume ? perfume.id : null;
   document.getElementById('formTitle').textContent = perfume ? 'Edit perfume' : 'Add a perfume';
@@ -1385,18 +1410,18 @@ function openForm(perfume){
   document.getElementById('formPanel').classList.add('open');
   document.getElementById('fBrand').focus();
 }
- 
+
 function closeForm(){
   document.getElementById('formPanel').classList.remove('open');
   editingId = null;
 }
- 
+
 // ---------- Main list ----------
 function render(){
   renderLegend();
   renderBrandFilter();
   renderTabList();
- 
+
   const list = document.getElementById('list');
   const filtered = perfumes.filter(p=>{
     const matchesSeason = activeSeason === null || p.seasons.includes(activeSeason);
@@ -1406,12 +1431,12 @@ function render(){
     const matchesSearch = searchText === '' || text.includes(searchText);
     return matchesSeason && matchesBrand && matchesTag && matchesSearch;
   });
- 
+
   if(filtered.length === 0){
     list.innerHTML = '<div class="empty-msg">No perfumes match this filter yet.</div>';
     return;
   }
- 
+
   list.innerHTML = filtered.map(p=>{
     const badges = (p.tags||[]).map(tagId=>{
       const tab = customTabs.find(t=>t.id===tagId);
@@ -1419,14 +1444,14 @@ function render(){
       if(tab.name.toLowerCase()==='favorite') return '';
       return `<span class="badge-tag" title="${tab.name}">${tab.name.charAt(0)}</span>`;
     }).join('');
- 
+
     const isFavorite = (p.tags||[]).includes('favorite');
- 
+
     const actionsHtml = isFavorite
       ? `<span class="badge-star" title="Favorite">★</span>
          <button class="icon-btn" data-action="edit" title="Edit">✎</button>`
       : `<button class="icon-btn" data-action="edit" title="Edit">✎</button>`;
- 
+
     return `
     <div class="row" data-id="${p.id}">
       <div class="brand-row">
@@ -1454,20 +1479,20 @@ function render(){
     </div>
   `;
   }).join('');
- 
+
   list.querySelectorAll('.row').forEach(row=>{
     const id = row.dataset.id;
     const perfume = perfumes.find(p=>p.id===id);
- 
+
     row.querySelector('[data-action="search"]').addEventListener('click', ()=>{
       const q = encodeURIComponent(`${perfume.brand} ${perfume.name}`.trim());
       window.open(`https://www.google.com/search?q=${q}`, '_blank');
     });
- 
+
     row.querySelector('[data-action="edit"]').addEventListener('click', ()=>{
       openForm(perfume);
     });
- 
+
     const toggleBtn = row.querySelector('[data-action="toggle-notes"]');
     const notesPanel = row.querySelector('.notes-panel');
     toggleBtn.addEventListener('click', ()=>{
@@ -1476,20 +1501,20 @@ function render(){
     });
   });
 }
- 
+
 document.getElementById('perfumeSearch').addEventListener('input', (e)=>{
   searchText = e.target.value.trim().toLowerCase();
   render();
 });
- 
+
 document.getElementById('brandFilter').addEventListener('change', (e)=>{
   activeBrand = e.target.value;
   render();
 });
- 
+
 document.getElementById('addBtn').addEventListener('click', ()=> openForm(null));
 document.getElementById('cancelBtn').addEventListener('click', closeForm);
- 
+
 document.getElementById('deleteBtn').addEventListener('click', async ()=>{
   if(!editingId) return;
   await deletePerfumeApi(editingId);
@@ -1497,19 +1522,19 @@ document.getElementById('deleteBtn').addEventListener('click', async ()=>{
   closeForm();
   render();
 });
- 
+
 document.getElementById('saveBtn').addEventListener('click', async ()=>{
   const brand = document.getElementById('fBrand').value.trim();
   const name = document.getElementById('fName').value.trim();
   const notes = document.getElementById('fNotes').value.trim();
   const seasons = getCheckedValues('seasonChecks');
   const tags = getCheckedValues('tagChecks');
- 
+
   if(!name){
     document.getElementById('fName').focus();
     return;
   }
- 
+
   if(editingId){
     const p = perfumes.find(p=>p.id===editingId);
     p.brand = brand; p.name = name; p.notes = notes; p.seasons = seasons; p.tags = tags;
@@ -1518,11 +1543,11 @@ document.getElementById('saveBtn').addEventListener('click', async ()=>{
     const inserted = await insertPerfume({brand, name, notes, seasons, tags});
     perfumes.push({...inserted, seasons: inserted.seasons||[], tags: inserted.tags||[]});
   }
- 
+
   closeForm();
   render();
 });
- 
+
 initAuth();
 </script>
 </body>
